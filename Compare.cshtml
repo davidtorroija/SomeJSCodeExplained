@@ -1,0 +1,225 @@
+﻿//no lleva body porque es parte de una MasterPage es decir se inyectará como un template ya que es LightBox
+//los data-bind que ven como atributos en diferentes tags son los que me conectarán el js al html entonces el js será el
+//será el que manda y hará que cambien los items, visibilidades, tamaño de listas etc, por ejemplo
+//yo tengo un objeto en js que es observable y se llama visibilidadBoton
+// y está en true entonces cuando lo bindee a un buton con "data-bind=visible: visibilidadBoton" hará q se vea el boton pero
+//si pongo el booleano en false automaticamente le avisa al html y le pone "display:none" y no veo mas el botón
+
+//this section is a template that will be injected as a LightBox
+//the porpuses of this page is to show you how we create the connection between js and html through KnockoutJS
+//this bidirectional link (Model View View Model Pattern) between the js and html is made by the attributes 'data-bind' inside the html tags and is in that way because we created variables that implements the observer pattern so this notify every change to the view  
+//
+@using Resources
+@{
+    ViewBag.Title = "Home Page";
+    Layout = null;
+}
+@section scripts {
+    <script type="text/javascript" src="@Url.Content("~/Scripts/lib/jquery-ui-1.9.0.custom.min.js")"></script>
+}
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+</div>
+<div class="comparerModules" data-bind="activity: isLoading" style="height:100%;width:100%">
+    <!-- ko foreach: baseballCards -->
+    <article class="compareModule"  data-bind="with:Employee, style:{width: $root.ids.length === 2 ? '478px' : '315px'}, attr:{id: 'compare' + $index()}" >
+		<div class="headerCompareModule">
+			<span class="iconProperties iconS iconFemaleOrangeS" data-bind="visible: Security.CanShowFemale && IsFemale" title="Female">Female</span>
+			<span class="iconProperties iconS iconDiversityGreenS" data-bind="visible: Security.CanShowDiversity && IsDiversity" title="Diversity">Diversity</span>
+			<span class="iconProperties iconS iconNewHireRedS" data-bind="visible: Security.CanShowNewHire && IsNewHire" title="New Hire">New Hire</span>			
+			<img src="@Url.Content("~/Images/noImage.png")" style="width:63px; height:63px; float:left; margin:0 10px;" class="incumbentPhoto" alt="Employee Name" data-bind="attr: {src: $parent.employeeImageUrl}" />
+			<h4 class="deepBlueText fontSizeXL ellipsis" data-bind="text: $parent.fullName,tooltip:$parent.fullName">Employee Name</h4>
+			<h5 class="fontSizeM ellipsis" data-bind="text: CorporateTitle,tooltip:CorporateTitle"></h5>
+			<h6 class="fontSizeM ellipsis">Tenure: <span data-bind="text: YearsInRole,tooltip:YearsInRole" class="fontSizeM">0</span> Yrs</h6>
+			<h6 class="fontSizeM ellipsis" data-bind="text: Location + ', ' + Country,tooltip:Location + ', ' + Country">City, Country</h6>
+		</div>
+	    <ul class="compareMiniBBC">
+		    <li data-bind="visible: Security.CanShowManagementScope"><label>Max. Budget (M):</label><span class="ellipsis" data-bind="text: MaxBudget,tooltip:MaxBudget">100</span></li>
+		    <li data-bind="visible: Security.CanShowManagementScope"><label>Max. Employees:</label><span class="ellipsis"  data-bind="text: NumEmployeesManaged,tooltip:NumEmployeesManaged">100</span></li>
+		    <li data-bind="visible: Security.CanShowMobilityPreference"><label>Mobility Pref.:</label><div class="ellipsis"><span data-bind="yesnotext: $parent.mobilityPreference,tooltip:$parent.mobilityPreference"></span> | <span data-bind="text: $parent.mobilityPreferenceCountries,tooltip:$parent.mobilityPreferenceCountries"></span></div></li>            
+		    <li data-bind="visible: Security.CanShowTopDiverse"><label>Top Diverse Talent:</label><div><span data-bind="yesnotext: TopDiverse,tooltip:TopDiverse">Yes</span></div></li>
+		    <li data-bind="visible: Security.CanShowTop100"><label>Top 100:</label><div class="ellipsis"><span data-bind="yesnotext: Top100,tooltip:Top100">Yes</span></div></li>
+		    <li data-bind="visible: Security.CanShowLMCAlum"><label>LMC Alum:</label><div class="ellipsis"><span data-bind="yesnotext: LMCAlumn,tooltip:LMCAlumn">Yes</span></div></li>
+	    </ul>
+	
+	    @* ACCORDION *@
+	    <ul class="accordion">
+            <li><h4 data-bind="click: $root.loadExperience" target=".experienceSection" class="deepBlueText fontSizeM"><span class="iconProperties iconS iconArrowDown"></span>Experience</h4>
+				<div data-bind="visible: Security.CanShowExperience" class="scroll experienceSection">
+					<table class="experienceTable">
+						<thead>
+							<tr>
+								<td>Dates</td>
+								<td>Company</td>
+								<td>LOB</td>
+								<td>Title</td>
+								<td>Role</td>
+							</tr>
+						</thead>            
+						<tbody data-bind="foreach: $root.experience">
+							<tr>
+								<td><span data-bind="datetext: {value: StartDate, format: 'YYYY'}"></span> - <span data-bind="datetext: {value: EndDate, format: 'YYYY', nullText: 'present'}"></span></td>
+								<td data-bind="text: Company">JP Morgan</td>
+								<td>HR Tech</td>
+								<td>MD</td>
+								<td data-bind="text: Role">Technology Director</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+		    </li>
+            <li data-bind="click: $root.loadInternationalExperience" target=".internationalSection"><h4 class="deepBlueText fontSizeM"><span class="iconProperties iconS iconArrowDown"></span>Country Experience</h4>
+				<div data-bind="visible: Security.CanShowInternationalExperience" class="scroll internationalSection">
+					<table class="international">
+						<thead>
+							<tr>
+								<td>@Literals.Years</td>
+								<td>@Literals.Country</td>
+							</tr>
+						</thead>
+						<tbody data-bind="foreach: InternationalExperiences">
+							<tr>
+								<td data-bind="text: Years">Language #1</td>
+								<td data-bind="text: Country">high</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+		    </li>
+            <li data-bind="click: $root.loadLanguages" target=".languagesSection"><h4 class="deepBlueText fontSizeM"><span class="iconProperties iconS iconArrowDown"></span>Languages</h4>
+				<div data-bind="visible: Security.CanShowLanguages" class="scroll languagesSection">
+					<table class="languages">
+						<thead>
+							<tr>
+								<td>@Literals.Language</td>
+								<td>@Literals.Speaking</td>
+								<td>@Literals.Reading</td>
+								<td>@Literals.Writing</td>
+							</tr>
+						</thead>
+						<tbody data-bind="foreach: Languages">
+							<tr>
+								<td data-bind="text: Language">Language #1</td>
+								<td><span class="iconProperties iconS"  data-bind="css: {iconHighGreenS: SpeakingLevel === 'HIGH',iconMediumYellowS: SpeakingLevel === 'MODERATE',iconLowRedS: SpeakingLevel === 'LOW'},tooltip:SpeakingLevel"></span></td>
+								<td><span class="iconProperties iconS iconMediumYellowS" data-bind="css: {iconHighGreenS: ReadingLevel === 'HIGH',iconMediumYellowS: ReadingLevel === 'MODERATE',iconLowRedS: ReadingLevel === 'LOW'},tooltip:ReadingLevel"></span></td>
+								<td><span class="iconProperties iconS iconLowRedS" data-bind="css: {iconHighGreenS: WritingLevel === 'HIGH',iconMediumYellowS: WritingLevel === 'MODERATE',iconLowRedS: WritingLevel === 'LOW'},tooltip:WritingLevel"></span></td>
+							</tr>
+						</tbody>
+					</table>  
+				</div>
+		    </li>
+		    
+		    <li  data-bind="click: $root.loadEducation" target=".educationSection"><h4 class="deepBlueText fontSizeM"><span class="iconProperties iconS iconArrowDown"></span>Education</h4>
+				<div data-bind="visible: Security.CanShowEducation"class="scroll educationSection">
+					<table class="education">
+						<thead>
+							<tr>
+								<td>@Literals.Degree</td>
+								<td>@Literals.Major</td>
+								<td>@Literals.University</td>
+							</tr>
+						</thead>
+						<tbody data-bind="foreach: Educations">
+							<tr>
+								<td data-bind="text: University"></td>
+								<td data-bind="text: Degree"></td>
+								<td data-bind="text: Major"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+		    </li>
+		    <li data-bind="click: $root.loadSuccessors" target=".successorsForSection"><h4 class="deepBlueText fontSizeM"><span class="iconProperties iconS iconArrowDown"></span>Successor for positions</h4>
+				<div class="successorsForSection" data-bind="with: $parent.successorVM,visible: Security.CanShowSuccessors">
+                    <div class="scroll successorsForSection" data-bind="with: data">
+					    <!-- ko foreach: SuccessorFor -->
+					    <div class="module successors lightBlueBackground">
+						    <span class="iconProperties" data-bind="text: SuccessionStatus, css: {iconReadyNowGreenSS: SuccessionStatusCode === 'Now', iconReadyLaterOrangeSS: SuccessionStatusCode === 'Later', iconReadyFutureGreenSS: SuccessionStatusCode === 'Future'}">Now</span>		
+						    <h3 data-bind="text: Description" class="blackText fontSizeM">Chief Risk Officer</h3>
+						    <div class="lightGrayOneBackground">
+							    <a class="ellipsis" data-bind="text: FullName" href="#">Dummy Dummy</a>
+							    <br><div class="ellipsis coolGrayText" data-bind="text: OfficerTitle">Officer Title</div>
+						    </div>		
+					    </div>
+					    <!-- /ko -->
+				    </div>
+                </div>
+		    </li>
+		    <li data-bind="click: $root.loadSuccessors" target=".successorsSection"><h4 class="deepBlueText fontSizeM"><span class="iconProperties iconS iconArrowDown"></span>This position´s successors</h4>
+				<div class="successorsSection" data-bind="with: $parent.successorVM,visible: Security.CanShowSuccessors">
+                    <div class="scroll" data-bind="with:data">
+					    <!-- ko foreach: SuccessorTo -->
+					    <div class="module lightBlueBackground">
+						    <h3 class="blackText fontSizeM" data-bind="text:Description">Chief Risk Officer</h3>
+						    <!-- ko foreach: Successors-->
+						    <div class="lightGrayOneBackground" data-bind="template: {name: Type}">				    
+						    </div>			    
+						    <!-- /ko -->
+					    </div>
+					    <!-- /ko -->
+				    </div>
+                </div>
+		    </li>
+		    <li data-bind="click: $root.loadFeedback" target=".feedback">
+                <h4 class="deepBlueText fontSizeM"><span class="iconProperties iconS iconArrowDown"></span>360 Feedback</h4>
+                <div data-bind="with: $parent.feedbackVM, slidevisible: $root.feedbackLoaded,visible: Security.CanShowFeedback360" class="scroll feedback">
+	                <ul class="listOf360Feedback">
+		                <li data-bind="visible: strengthsItems().length"><h5>Strengths</h5>
+			                <ul data-bind="foreach: strengthsItems">
+				                <li><span data-bind="text: Description"></span><span> | </span><span data-bind="datetext: {value: EmployeeData.date, format: 'MM/YYYY'}" class="cccText">dd/mm/yyyy</span></li>					
+			                </ul>
+		                </li>
+		                <li data-bind="visible: opportunitiesItems().length"><h5>Opportunities</h5>
+			                <ul data-bind="foreach: opportunitiesItems">
+				                <li><span data-bind="text: Description"></span><span> | </span><span data-bind="datetext: {value: EmployeeData.date, format: 'MM/YYYY'}" class="cccText">dd/mm/yyyy</span></li>					
+			                </ul>
+		                </li>
+	                </ul>
+                </div>
+		    </li>
+		    
+		    <li data-bind="click: $root.loadLeadershipPrograms" target=".leadershipProgramsSection"><h4 class="deepBlueText fontSizeM"><span class="iconProperties iconS iconArrowDown"></span>Leadership Programs</h4>
+				<div class="scroll leadershipProgramsSection" data-bind="with: $parent.leadershipProgramVM,visible: Security.CanShowLeadershipProgram">
+					<ul class="display" data-bind="foreach: checkedItems" >
+						<li><span data-bind="text: Description"></span> | <span class="cccText" data-bind="datetext: {value: EmployeeData.date, format: 'MM/YYYY'}">dd/mm/yyyy</span></li>
+					</ul>
+				</div>
+		    </li>
+		    <li id="noteSection" data-bind="click: $root.loadNotes" target=".notesSection"><h4 class="deepBlueText fontSizeM"><span class="iconProperties iconS iconArrowDown"></span>Notes</h4>
+				<div class="scroll notesSection" data-bind="with: $parent.notesVM,visible: Security.CanShowNotes">
+					<ul class="listOfNotes" data-bind="foreach:items">
+						<li>
+							<div class="section" data-bind="text:NoteTypeDescription"></div>
+							<div class="date"><span data-bind="datetext: Date"></span></div>
+							<div class="by">by <span data-bind="text:FullName"></span></div>
+							<div class="note"><span class="ellipsis" data-bind="text: Text"></span></div>
+							<a  href="#" 
+                                onclick="   $(this).prev()
+                                                .find('span')
+                                                .toggleClass('ellipsis'); 
+                                            $(this).parent().parent().parent().parent().parent()
+                                                .find('#noteSection')
+                                                .toggleClass('active');" 
+                                class="deepBlueText viewMoreLink">View More</a>
+						</li>
+					</ul>
+				</div>
+		    </li>
+	    </ul>
+    </article>
+    <!-- /ko -->
+</div>
+
+<script type="text/javascript">
+//este codigo es obligatorio y no lo sacamos a otro archivo para que se note la conexión entre el js y HTML aquí es donde se unen
+    var ids = "@ViewBag.Ids".split(",");
+    console.log(ids);
+    $(document).ready(function () {
+        require(['viewmodels/compare'], function (compare) {
+            var vm = compare.getVM({ ids: ids });
+            vm.bind('.comparerModules').then(function () {
+               console.log('bind compare', $('.comparerModules .accordion li:first'));                
+            });
+        });
+    });
+</script>
