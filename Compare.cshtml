@@ -1,11 +1,4 @@
-﻿//no lleva body porque es parte de una MasterPage es decir se inyectará como un template ya que es LightBox
-//los data-bind que ven como atributos en diferentes tags son los que me conectarán el js al html entonces el js será el
-//será el que manda y hará que cambien los items, visibilidades, tamaño de listas etc, por ejemplo
-//yo tengo un objeto en js que es observable y se llama visibilidadBoton
-// y está en true entonces cuando lo bindee a un buton con "data-bind=visible: visibilidadBoton" hará q se vea el boton pero
-//si pongo el booleano en false automaticamente le avisa al html y le pone "display:none" y no veo mas el botón
-
-//this section is a template that will be injected as a LightBox
+﻿//this section is a template that will be injected as a LightBox
 //the porpuses of this page is to show you how we create the connection between js and html through KnockoutJS
 //this bidirectional link (Model View View Model Pattern) between the js and html is made by the attributes 'data-bind' inside the html tags and is in that way because we created variables that implements the observer pattern so this notify every change to the view  
 //
